@@ -133,7 +133,10 @@ FROM
 ;
 
 
-
+-- something you might need to know for the future 
+-- converting date formats
+-- pgsql example: 
+-- select to_char(to_date(admindate, 'MM-DD-YYYY'), 'YYYY-MM-DD')
 
 
 
