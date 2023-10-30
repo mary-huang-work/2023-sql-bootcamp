@@ -1,14 +1,16 @@
--- #1
+-- #1: Employee Table
 -- Aim: combine the first and last name
 -- || <-- in SQLITE we use this symbol
 SELECT 
   e.FirstName 
   ,e.LastName 
-  ,e.FirstName || ' ' ||e.LastName AS FullName 
+  ,e.FirstName || ' ' || e.LastName AS FullName 
 FROM 
   Employee e 
 ;
--- #2
+
+
+-- #2: Employee Table
 -- Aim: flag if someone's name starts with the letter M
 -- || <-- in SQLITE we use this symbol
 WITH base AS (
@@ -21,15 +23,15 @@ WITH base AS (
 )
 SELECT
   FullName
-  ,CASE WHEN FullName LIKE 'm%' 
-        THEN 1
-        ELSE 0
+  ,CASE WHEN FullName LIKE '%a%' 
+        THEN 1      /* flag as 1 */
+        ELSE 0      /* flag as 0 */
         END                          AS flag
 FROM 
   base
 ;
 
--- #3
+-- #3: Invoice Table
 -- Aim: 1. find the distinct list of countries we have billed and 2. present them in ascending order
 -- Functions we wil use 
 --   DISTINCT
@@ -41,7 +43,7 @@ FROM
 ORDER BY BillingCountry 
 ;
 
--- #4
+-- #4: Employee Table
 -- Aim: Find the email domains
 -- Functions we will use 
 --    INSTR( string, substring )
@@ -54,7 +56,7 @@ FROM
   Employee  c 
 ;
 
--- #5
+-- #5: Employee Table
 -- Aim: finding the length of phone employee phone numbers
 -- Functions we will use 
 --   LENGTH( string )
@@ -67,24 +69,24 @@ ORDER BY
   LENGTH (Phone) ASC
 ;
 
--- #6
--- Aim: standardise employee phone numbers so that they all start with +
+-- #6: Employee Table
+-- Aim: standardise employee phone numbers so that they all start with + sign
 -- Functions we will use 
 --    CASE statements
 --    SUBSTR( string, start, length )
 SELECT 
   Phone 
+  ,LENGTH(Phone)        AS str_len    
   ,SUBSTRING(Phone,1,1) AS first_char
   ,CASE WHEN SUBSTRING(Phone,1,1) <> '+'  /* does not start with + */
-          THEN '+'||Phone                 /* add + as a prefix */
+          THEN '+'||Phone                 /* add + as a prefix to the phone number */
         ELSE Phone                        /* otherwise use the value as is */
-   end                  AS phone_std
-  ,LENGTH(Phone)        AS str_len
+   end                  AS std_phone_number
 FROM 
   Employee e 
 ;
 
--- #7
+-- #7: Playlist
 -- Aim: format playlist names
 -- Functions we will use 
 --   UPPER( string )
@@ -96,7 +98,7 @@ SELECT
 FROM Playlist p 
 ;
 
--- #8
+-- #8: Customer
 -- Aim: fixing spelling using the replace function
 -- REPLACE( string, current value, new value )  
 SELECT 
@@ -111,25 +113,26 @@ ORDER BY 2
 SELECT 
  DISTINCT city 
  ,Country    
- ,case when city like 's%ney' then 'Sydney'
+ ,case when city like's%dney' then 'Sydney'
   else City end 
 FROM 
   Customer c 
 ORDER BY 2
 ;
 
--- #9
+-- #9 Invoice
 -- AIM: 1. find many years since the last sale and 2, number of days since the last sale
 -- JULIANDAY() function, which counts the number of DAYS since noon in Greenwich on November 24, 4714 B.C
 -- DATETIME() functation, gets the database time... note that this is in UTC
 SELECT 
-  DATETIME()                                                  AS curr_date_time
-  ,MAX(InvoiceDate)                                           AS max_date
-  ,DATETIME() - MAX(InvoiceDate)                              AS year_diff
-  ,JULIANDAY((DATETIME()) - MAX(JULIANDAY(InvoiceDate))       AS day_diff
-  ,ROUND(JULIANDAY(DATETIME()) - max(JULIANDAY(InvoiceDate))) AS day_diff_rounded
+  MAX(i.InvoiceDate)                                           AS max_date
+  ,DATETIME()                                                  AS curr_db_date_time
+  ,strftime('%Y-%m-%d',DATETIME())                             AS curr_db_date
+  ,DATETIME() - MAX(i.InvoiceDate)                             AS year_diff
+  ,JULIANDAY(DATETIME()) - JULIANDAY(i.InvoiceDate)            AS day_diff
+  ,ROUND(JULIANDAY(DATETIME()) - max(JULIANDAY(InvoiceDate)))  AS day_diff_rounded
 FROM
-  Invoice
+  Invoice i
 ;
 
 
