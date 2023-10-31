@@ -188,33 +188,46 @@ order by count(*) desc;
 
 
 
---l) Which employee looks after the most artists?
+--l) Which employee supports the most customers? 
 select 
-	EmployeeId,
-	Firstname||' '||lastname as name,
-	count(ReportsTo) as count_artist
-from employee 
-group by EmployeeId,Firstname||' '||lastname
-order by count(ReportsTo) desc;
+	employee,
+	employeeid,
+	count(*) 
+from (
+	select --*
+		i.customerid,
+		e.EmployeeId,
+		e.FirstName||' '||e.LastName as employee
+	from InvoiceLine il
+	left join invoice i 
+		on il.InvoiceId = i.InvoiceId 
+	left join customer c
+		on c.CustomerId = i.CustomerId  
+	left join Employee e 
+		on c.supportrepid = e.EmployeeId 
+	group by 	i.customerid,
+			e.employeeid,
+			e.FirstName||' '||e.LastName
+)
+group by employee,
+	employeeid;
 
---ANS: all employees but Andrew Adams, employeeid =1 look after 1 artist
+--ANS: Employeeid 3, Jane Peacock with 21 distinct customers
 
 
---m) An employee gets a bonus if the artist they look after make $20 in sales. Which employees will get the bonus?
+--m) An employee gets a bonus if they support the most sales by dollars. Which employee will get the bonus? 
 select
-	e.Firstname||' '||e.lastname as employee_name,
-	sum(il.unitprice * il.quantity) as sales
+	sum(il.UnitPrice *il.Quantity ) as sales,  
+	e.EmployeeId,
+	e.FirstName||' '||e.LastName as employee
 from InvoiceLine il
-left join Track t 
-	on t.TrackId =il.TrackId 
-left join album al
-	on al.AlbumId = t.AlbumId
-left join Artist a  
-	on a.ArtistId = al.ArtistId 
+left join invoice i 
+	on il.InvoiceId = i.InvoiceId 
+left join customer c
+	on c.CustomerId = i.CustomerId  
 left join Employee e 
-	on e.ReportsTo = a.ArtistId 
-where employeeid is not null
-group by e.Firstname||' '||e.lastname
-order by  sum(il.unitprice*il.quantity) desc;
+	on c.supportrepid = e.EmployeeId 
+group by e.EmployeeId,
+	e.FirstName||' '||e.LastName;
 
---ANS: Robert King and Laura Callahan will both get the bonus as their artists made 21.78 in sales
+--ANS: Jane Peacock with 833.04 in support sales

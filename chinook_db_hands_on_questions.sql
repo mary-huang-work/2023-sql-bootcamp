@@ -46,8 +46,9 @@
 
 
 
---l) Which employee looks after the most artists?
+--l) Which employee supports the most customers?
 
 
 
---m) An employee gets a bonus if the artist they look after make $20 in sales. Which employees will get the bonus?
+--m) An employee gets a bonus if they support the most sales by dollars. Which employee will get the bonus?
+
